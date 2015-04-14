@@ -1,4 +1,4 @@
-# elucidat-code-test-1
+# Elucidat PHP/JS code test
 
 This test is intended for developers looking to work with Elucidat.
 
