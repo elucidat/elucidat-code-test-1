@@ -49,7 +49,7 @@
 		<!-- Latest compiled and minified Bootstrap -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 		<!-- CanJS - an alternative to Angular - allows for interesting client side interactions-->
-		<script src="https://canjs.com/release/2.2.4/can.jquery.js"></script>
+		<script src="http://canjs.com/release/2.2.4/can.jquery.js"></script>
 		<!-- D3 is a brilliant library for data visualisations -->
 		<script src="http://d3js.org/d3.v3.min.js"></script>
 
