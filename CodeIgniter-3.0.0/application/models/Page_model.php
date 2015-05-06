@@ -2,9 +2,14 @@
 /**
  * Gets and manages page data - this is a fake model to simulate a database connection
  *
- * @package Elucidat
+ * @todo the function getTree may become private and will create new functions that take
+ *      and parse/change it in order to be consumed by external libraries (e.g. javascript
+ *      libraries).
+ * 
+ * @package     Elucidat
  * @author      Ian Budden (http://ianbudden.com)
- * @version     1.0.0
+ * @author      Ricardo Valfreixo <ricardo.freixo@elucidat.com>
+ * @version     2.0.0
  */
 class Page_model extends CI_Model
 {
@@ -13,11 +18,70 @@ class Page_model extends CI_Model
     {
     }
 
+    /**
+     * getTree()
+     * 
+     * return an array of arrays containing all items organized by parent/children. alternatively
+     * it may return a json representation of the same structure to be consumed by libraries that create
+     * tree structures or flow charts
+     * 
+     * @param bool $json 
+     * @return type
+     */
+    public function get_tree($json = false)
+    {
+        /**
+         * Holds the original json object stream
+         * @var array
+         */
+        $initial_elements = $this->get_pages();
+
+        /**
+         * this variable will contain function output. It is initialized with the first element
+         * from the initial element array and object tree will follow
+         * @var array
+         */
+        $tree[0] = $initial_elements[0];
+
+        /**
+        * sanitize input array to be easily searchable later. all page_code becomes keys and name and the
+        * current name is moved to page_name. This is to facilitate usage of D3 library that uses the "name"
+        * property as key for relation from a node to the parent
+        */
+        foreach($initial_elements as $key => $item)
+        {
+            $initial_elements[$item['page_code']] = $item;
+            $initial_elements[$item['page_code']]['page_name'] = $item['name'];
+            $initial_elements[$item['page_code']]['name'] = $item['page_code'];
+            unset($initial_elements[$key]);
+        }
+
+        /**
+         * get each child element under the parent
+         */
+        if(count($tree[0]['children']) > 0)
+        {
+            foreach ($tree[0]['children'] as $key => $value) {
+                
+            }
+        }
+
+
+        dd($initial_elements);
+
+        if($json)
+        {
+            return json_encode($tree);
+        }
+        return $tree;
+
+    }
 
     /**
-     * Return all pages within a course
+     * Return all pages within a course. This is a mock function that mimick the behaviour of an actual course
+     * info.
      * 
-     * @return  null
+     * @return  array
      */
     public function get_pages () 
     {
@@ -212,6 +276,7 @@ class Page_model extends CI_Model
                     'grab' => 'https://625621aac04f19ed1a54-078d139490598a4fe778648eda3bc29b.ssl.cf3.rackcdn.com/547c4b99ec2aa_text_and_images__image_left.png'
                 )
             );
-
     }
+
+    
 }
