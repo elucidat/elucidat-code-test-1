@@ -25,6 +25,9 @@ class Page_model extends CI_Model
      * it may return a json representation of the same structure to be consumed by libraries that create
      * tree structures or flow charts
      * 
+     * TEMP: for now this function outputs json (or PHP) and the visualization will be handled in the frontend
+     * by javascript library
+     * 
      * @param bool $json 
      * @return type
      */
@@ -37,13 +40,6 @@ class Page_model extends CI_Model
         $initial_elements = $this->get_pages();
 
         /**
-         * this variable will contain function output. It is initialized with the first element
-         * from the initial element array and object tree will follow
-         * @var array
-         */
-        $tree[0] = $initial_elements[0];
-
-        /**
         * sanitize input array to be easily searchable later. all page_code becomes keys and name and the
         * current name is moved to page_name. This is to facilitate usage of D3 library that uses the "name"
         * property as key for relation from a node to the parent
@@ -53,27 +49,40 @@ class Page_model extends CI_Model
             $initial_elements[$item['page_code']] = $item;
             $initial_elements[$item['page_code']]['page_name'] = $item['name'];
             $initial_elements[$item['page_code']]['name'] = $item['page_code'];
+            $initial_elements[$item['page_code']]['parent'] = 0;
             unset($initial_elements[$key]);
         }
 
         /**
-         * get each child element under the parent
+         * put a parentId list on each element to be referenced later
          */
-        if(count($tree[0]['children']) > 0)
+        foreach($initial_elements as $key => $item)
         {
-            foreach ($tree[0]['children'] as $key => $value) {
-                
+            if(count($item['children']) > 0)
+            {
+                foreach ($item['children'] as $ckey) {
+                    if( empty($ckey) ) continue; // avoid empty references
+                    
+                    if($initial_elements[$ckey]['parent'] != 0)
+                    {
+                        $initial_elements[$ckey]['parent'][] = $item['name'];
+                    }
+                    else
+                    {
+                        $initial_elements[$ckey]['parent'] = [];
+                        $initial_elements[$ckey]['parent'][] = $item['name'];
+                    }
+                }
             }
         }
 
 
-        dd($initial_elements);
-
+        // choose if return json or php object. Might need this for later
         if($json)
         {
-            return json_encode($tree);
+            return json_encode($initial_elements);
         }
-        return $tree;
+        return $initial_elements;
 
     }
 
