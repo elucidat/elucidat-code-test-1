@@ -12,8 +12,28 @@
 
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
         <!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://bootswatch.com/2/cosmo/bootstrap.min.css">
+
+		<style>
+
+			 .node circle {
+			   fill: #fff;
+			   stroke: steelblue;
+			   stroke-width: 3px;
+			   cursor: pointer;
+			 }
+
+			 .node text { font: 12px sans-serif; }
+
+			 .link {
+			   fill: none;
+			   stroke: #ccc;
+			   stroke-width: 2px;
+			 }
+		 
+	    </style>
+
 
     </head>
     <body>
@@ -21,28 +41,20 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
+        
         <div class="container">
-	        <div class="jumbotron">
-	  			<h1>Hello developer!</h1>
-	  			<p>This data represents the structure of an Elucidat e-learning course. Your task, if you choose to accept it, is to show this in an interesting, and useful way.</p>
-	  		
-	  			<ul>
-		  			<li>We've included some useful libraries to get you going. Feel free to use these, or use your own. Up to you.</li>
-		  			<li>The data represents a set of pages. The Learner will progress through the pages in order, following the links within the pages.</li>
-		  			<li>There are often multiple links within a page, so the Learner may not progress in a linear order.</li>
-		  			<li>This display is intended for the author of the course, who is wanting to understand how a Learner might progress through the course.</li>
-		  			<li>You must display the structure in an interesting way.</li>
-		  			<li>Feel free to add to the data if you want - if you think an extra bit of page data would be useful to a content author - add it. Extra data could be related to the editing process, or to how Learners are interacting with the page.</li>
-		  			<li>What it looks like is important.</li>
-		  			<li>You must make it interactive (for example implement a filter).</li>
-		  			<li>Please make sure that your filter is implemented server-side (to force you to demonstrate your PHP).</li>
-		  			<li>Documentation is important. So are Unit tests.</li>
-	  			</ul>
-	  		</div>
-
-	  		<h2>Course data:</h2>
-  			<pre><code><?php echo json_encode( $pages, JSON_PRETTY_PRINT ); ?></code></pre>
+        	<div class="row">
+        		<h1>top-down view of a course</h1>
+        	</div>
         </div>
+
+        <div class="container">
+        	<div class="row">
+        		<div id="graph"></div>
+        	</div>
+        </div>	
+
+
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
@@ -55,6 +67,93 @@
 
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+
+        <script type="text/javascript">
+        	var data = <?= json_encode($pages,JSON_PRETTY_PRINT) ?>;
+        	var dataMap = data.reduce(function(map, node) {
+			 map[node.name] = node;
+			 return map;
+			}, {});
+			var treeData = [];
+			data.forEach(function(node) {
+			 // add to parent
+			 var parent = dataMap[node.parent];
+			 if (parent) {
+			  // create child array if it doesn't exist
+			  (parent.children || (parent.children = []))
+			   // add node to child array
+			   .push(node);
+			 } else {
+			  // parent is null or missing
+			  treeData.push(node);
+			 }
+			});
+
+			// ************** Generate the tree diagram  *****************
+			var margin = {top: 30, right: 120, bottom: 20, left: 120},
+				width = 960 - margin.right - margin.left,
+				height = 1000 - margin.top - margin.bottom;
+				 
+			var i = 0;
+
+			var tree = d3.layout.tree().size([height, width]);
+
+			var diagonal = d3.svg.diagonal().projection(function(d) { return [d.x, d.y]; });
+
+			var svg = d3.select("body").append("svg")
+				.attr("width", width + margin.right + margin.left)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			root = treeData[0];
+			  
+			update(root);
+
+			function update(source) {
+
+			  // Compute the new tree layout.
+			  var nodes = tree.nodes(root).reverse(),
+			  	links = tree.links(nodes);
+
+			  // Normalize for fixed-depth.
+			  nodes.forEach(function(d) { d.y = d.depth * 50; });
+			  nodes.forEach(function(d) { d.x = d.depth * 50; });
+
+			  // Declare the nodesâ€¦
+			  var node = svg.selectAll("g.node").data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+			  // Enter the nodes.
+			  var nodeEnter = node.enter().append("g")
+				.attr("class", "node")
+				.attr("transform", function(d) { 
+				return "translate(" + d.x + "," + d.y + ")"; });
+
+			  nodeEnter.append("circle")
+				.attr("r", 10)
+				.style("fill", "#fff");
+
+			  nodeEnter.append("text")
+				.attr("y", function(d) { 
+				return d.children || d._children ? -18 : 18; })
+				.attr("dy", ".35em")
+				.attr("text-anchor", 'middle')
+				.text(function(d) { return d.page_name; })
+				.style("fill-opacity", 1);
+
+			  // Declare the links
+			  var link = svg.selectAll("path.link").data(links, function(d) { return d.target.id; });
+
+			  // Enter the links.
+			  link.enter().insert("path", "g")
+				.attr("class", "link")
+				.attr("d", diagonal);
+
+			}
+
+
+        </script>
+
 
     </body>
 </html>

@@ -3,11 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
-| Hooks
+| Display Override
 | -------------------------------------------------------------------------
-| This file lets you define "hooks" to extend CI without hacking the core
-| files.  Please see the user guide for info:
-|
-|	http://codeigniter.com/user_guide/general/hooks.html
-|
+
+	Override the display for correct testing purpose
+
 */
+
+$hook['display_override'] = array(
+    'class' => 'DisplayHook',
+    'function' => 'captureOutput',
+    'filename' => 'DisplayHook.php',
+    'filepath' => 'hooks'
+);

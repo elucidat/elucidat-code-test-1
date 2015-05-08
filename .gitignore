@@ -1,0 +1,5 @@
+vendor/
+composer.phar
+CodeIgniter-3.0.0/system/
+CodeIgniter-3.0.0/user_guide/
+CodeIgniter-3.0.0/application/cache/

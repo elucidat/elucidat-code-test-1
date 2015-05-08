@@ -17,7 +17,7 @@ class Welcome extends CI_Controller {
 		$this->load->model('page_model');
 		// put the data in a useful for the view
 		$page_data = array(
-			'pages' => $this->page_model->get_pages()
+			'pages' => $this->page_model->get_tree()
 		);
 		// and load the view
 		$this->load->view('pages_view', $page_data);
