@@ -76,6 +76,13 @@ class Page_model extends CI_Model
             }
         }
 
+        // remove keys
+        $temp_array = [];
+        foreach ($initial_elements as $key => $value) {
+            $temp_array[] = $value;
+        }
+        $initial_elements = $temp_array;
+
 
         // choose if return json or php object. Might need this for later
         if($json)
