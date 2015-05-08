@@ -90,7 +90,7 @@
 			});
 
 			// ************** Generate the tree diagram  *****************
-			var margin = {top: 20, right: 120, bottom: 20, left: 120},
+			var margin = {top: 30, right: 120, bottom: 20, left: 120},
 				width = 960 - margin.right - margin.left,
 				height = 1000 - margin.top - margin.bottom;
 				 
@@ -114,45 +114,44 @@
 
 			  // Compute the new tree layout.
 			  var nodes = tree.nodes(root).reverse(),
-			   links = tree.links(nodes);
+			  	links = tree.links(nodes);
 
 			  // Normalize for fixed-depth.
 			  nodes.forEach(function(d) { d.y = d.depth * 50; });
 			  nodes.forEach(function(d) { d.x = d.depth * 50; });
 
 			  // Declare the nodesâ€¦
-			  var node = svg.selectAll("g.node")
-			   .data(nodes, function(d) { return d.id || (d.id = ++i); });
+			  var node = svg.selectAll("g.node").data(nodes, function(d) { return d.id || (d.id = ++i); });
 
 			  // Enter the nodes.
 			  var nodeEnter = node.enter().append("g")
-			   .attr("class", "node")
-			   .attr("transform", function(d) { 
-			    return "translate(" + d.x + "," + d.y + ")"; });
+				.attr("class", "node")
+				.attr("transform", function(d) { 
+				return "translate(" + d.x + "," + d.y + ")"; });
 
 			  nodeEnter.append("circle")
-			   .attr("r", 10)
-			   .style("fill", "#fff");
+				.attr("r", 10)
+				.style("fill", "#fff");
 
 			  nodeEnter.append("text")
-			   .attr("x", function(d) { 
-			    return d.children || d._children ? -13 : 13; })
-			   .attr("dy", ".35em")
-			   .attr("text-anchor", function(d) { 
-			    return d.children || d._children ? "end" : "start"; })
-			   .text(function(d) { return d.page_name; })
-			   .style("fill-opacity", 1);
+				.attr("y", function(d) { 
+				return d.children || d._children ? -18 : 18; })
+				.attr("dy", ".35em")
+				.attr("text-anchor", 'middle')
+				.text(function(d) { return d.page_name; })
+				.style("fill-opacity", 1);
 
-			  // Declare the linksâ€¦
-			  var link = svg.selectAll("path.link")
-			   .data(links, function(d) { return d.target.id; });
+			  // Declare the links
+			  var link = svg.selectAll("path.link").data(links, function(d) { return d.target.id; });
 
 			  // Enter the links.
 			  link.enter().insert("path", "g")
-			   .attr("class", "link")
-			   .attr("d", diagonal);
+				.attr("class", "link")
+				.attr("d", diagonal);
 
 			}
+
+
         </script>
 
 
