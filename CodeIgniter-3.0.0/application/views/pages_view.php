@@ -37,7 +37,6 @@
 		  			<li>You must make it interactive (for example implement a filter).</li>
 		  			<li>Please make sure that your filter is implemented server-side (to force you to demonstrate your PHP).</li>
 		  			<li>Documentation is important. So are Unit tests.</li>
-		  			<li>Depending on your platform, there may be some problems running this code out of the box. If that stops you - this probably isn't going to work out...</li>
 	  			</ul>
 	  		</div>
 
